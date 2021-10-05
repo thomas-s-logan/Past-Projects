@@ -1,0 +1,201 @@
+/*
+ * A program that simulates the Monty Hall Problem for a given number of times and
+ * returns the results to the user when done.
+*/
+
+#include <iostream>
+#include <cstdlib>
+#include <ctime>
+
+using namespace std;
+
+/* FUNCTION THAT ITERATES THE MONTY HALL FUNCTION UNTIL # IS MET. */
+void simulate(int num_iterations);
+
+/*******FUNCTION THAT SIMULATES THE MONTY HALL PARADOX********/
+bool monty_hall (char changeDoor, char diagnostics);
+
+/********MAIN DRIVING FUNCTION FOR THE PROGRAM********/
+int main() {
+
+    // Seed the random number generator.
+    srand(time(NULL));
+
+    int number = 0;
+
+    // Ask how many iterations to run.
+    cout << "How many simulations do you want to run? : ";
+    cin >> number;
+
+    simulate(number);
+
+    return 0;
+}
+
+
+/*FUNCTION THAT KEEPS ITERATING THE MONTY HALL FUNCTION UNTIL # IS MET.*/
+void simulate(int num_iterations){
+    int wins = 0;
+    bool won;
+    char diagnostics = '0';
+    char changeDoor = '0';
+
+    cout << "Do you want to change doors at the end?" << endl;
+    cout << "(Y)es OR (N)o : ";
+    cin >> changeDoor;
+
+    cout << "Do you want to enable diagnostic printouts?" << endl;
+    cout << "(Y)es OR (N)o : ";
+    cin >> diagnostics;
+
+    for(int i = 0; i < num_iterations; i++){
+        won = monty_hall(changeDoor, diagnostics);
+        if (won){
+            wins++;
+        }
+    }
+
+    // Report the results.
+    if(changeDoor == 'Y' || changeDoor == 'y') {
+        cout << endl;
+        cout << "******************************************" << endl;
+        cout << endl;
+        cout << " By changing doors you won " << wins << " times!" << endl;
+        cout << " And lost " << (num_iterations - wins) << " times." << endl;
+        cout << " That works out to " << ((float)wins/num_iterations)*100 << "% wins." << endl;
+        cout << endl;
+        cout << "******************************************" << endl;
+    }
+
+    if(changeDoor == 'N' || changeDoor == 'n'){
+        cout << endl;
+        cout << "******************************************" << endl;
+        cout << endl;
+        cout << " Not changing doors won you " << wins << " games." << endl;
+        cout << " And lost " << (num_iterations - wins) << " times." << endl;
+        cout << " That works out to " << ((float)wins/num_iterations)*100 << "% wins." << endl;
+        cout << endl;
+        cout << "******************************************" << endl;
+    }
+}
+
+
+/*******FUNCTION THAT SIMULATES THE MONTY HALL PARADOX********/
+bool monty_hall (char changeDoor, char diagnostics){
+
+    char door1 = '0';
+    char door2 = '0';
+    char door3 = '0';
+    int goatDoor = 0;
+
+    // Pick a random door to put the car behind.
+    int car = rand() % 3 + 1;
+
+    // Assign the car and goats to the doors.
+    if (car == 1){
+        door1 = 'C';
+        door2 = 'G';
+        door3 = 'G';
+    }
+
+    if (car == 2){
+        door1 = 'G';
+        door2 = 'C';
+        door3 = 'G';
+    }
+
+    if (car == 3){
+        door1 = 'G';
+        door2 = 'G';
+        door3 = 'C';
+    }
+
+    if (diagnostics == 'Y' || diagnostics == 'y') {
+        // Note what door the car is behind.                <------- FOR TESTING ONLY.
+        cout << "The car is behind door " << car << "!" << endl;
+    }
+
+    // Choose a random door.
+    int randomChoice = rand() % 3 + 1;
+
+    if (diagnostics == 'Y' || diagnostics == 'y') {
+        // Note what door was randomly chosen.              <------- FOR TESTING ONLY
+        cout << "Random door chosen is: " << randomChoice << "." << endl;
+    }
+
+    // Choose a goat door to open.
+    while (goatDoor == 0){
+        for(int i = 1; i < 4; i++){
+            if (i != car && i != randomChoice){
+                goatDoor = i;
+            }
+        }
+    }
+
+    if (diagnostics == 'Y' || diagnostics == 'y') {
+        // Note what door was opened to reveal a goat.     <------- FOR TESTING ONLY.
+        cout << "Goat Door Opened is: " << goatDoor << "." << endl;
+    }
+
+    int doorHolder = 0;
+    // Ask if the user wants to change doors?
+    if (changeDoor == 'Y' || changeDoor == 'y'){
+        for(int i = 1; i < 4; i++){
+            if(i != goatDoor && i != randomChoice){
+                doorHolder = i;
+            }
+        }
+        randomChoice = doorHolder;
+
+        if (diagnostics == 'Y' || diagnostics == 'y') {
+            // Note what door the chosen door was changed to.   <------ FOR TESTING ONLY.
+            cout << "Door Chosen changed to: " << randomChoice << "." << endl;
+        }
+    }
+
+    else if (changeDoor == 'N' || changeDoor == 'n'){
+        // DO NOTHING.
+
+        if (diagnostics == 'Y' || diagnostics == 'y') {
+            // Note that the door was NOT changed.          <------- FOR TESTING ONLY.
+            cout << "Door NOT changed." << endl;
+        }
+    }
+
+    // Check final outcome.
+    if (randomChoice == 1 && door1 == 'C'){
+
+        if (diagnostics == 'Y' || diagnostics == 'y') {
+            // Give results & print a blank line for easier reading.               <------- FOR TESTING ONLY.
+            cout << "WON!" << endl;
+            cout << endl;
+        }
+        return true;
+    }
+
+    if (randomChoice == 2 && door2 == 'C'){
+        if (diagnostics == 'Y' || diagnostics == 'y') {
+            // Give results & print a blank line for easier reading.               <------- FOR TESTING ONLY.
+            cout << "WON!" << endl;
+            cout << endl;
+        }
+        return true;
+    }
+
+    if (randomChoice == 3 && door3 == 'C'){
+        if (diagnostics == 'Y' || diagnostics == 'y') {
+            // Give results & print a blank line for easier reading.               <------- FOR TESTING ONLY.
+            cout << "WON!" << endl;
+            cout << endl;
+        }
+        return true;
+    }
+
+    // If none of the above happened then you didn't get the car.
+    if (diagnostics == 'Y' || diagnostics == 'y') {
+        // Give results & print a blank line for easier reading.               <------- FOR TESTING ONLY.
+        cout << "LOST..." << endl;
+        cout << endl;
+    }
+    return false;
+}
